@@ -34,7 +34,7 @@
       <i-col :span="spanRight">
         <div class="layout-header">
           <i-button type="text" @click="toggleClick">
-            <Icon type="menu" size="32"></Icon>
+            <Icon type="navicon-round" size="32"></Icon>
           </i-button>
         </div>
         <div class="layout-content">
