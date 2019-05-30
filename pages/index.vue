@@ -1,78 +1,61 @@
 <template>
-  <div class="layout" :class="{'layout-hide-text': spanLeft < 5}">
-    <Row type="flex layout_box">
-      <i-col :span="spanLeft" class="layout-menu-left">
-        <Menu active-name="1-2" theme="dark" width="auto" :open-names="['1']">
-          <div class="layout-logo-left"></div>
-          <Submenu name="1">
-            <template slot="title">
-              <Icon type="ios-navigate"></Icon>
-              导航一
-            </template>
-            <Menu-item name="1-1">选项 1</Menu-item>
-            <Menu-item name="1-2">选项 2</Menu-item>
-            <Menu-item name="1-3">选项 3</Menu-item>
-          </Submenu>
-          <Submenu name="2">
-            <template slot="title">
-              <Icon type="ios-keypad"></Icon>
-              导航二
-            </template>
-            <Menu-item name="2-1">选项 1</Menu-item>
-            <Menu-item name="2-2">选项 2</Menu-item>
-          </Submenu>
-          <Submenu name="3">
-            <template slot="title">
-              <Icon type="ios-analytics"></Icon>
-              导航三
-            </template>
-            <Menu-item name="3-1">选项 1</Menu-item>
-            <Menu-item name="3-2">选项 2</Menu-item>
-          </Submenu>
+  <div class="layout">
+    <Layout class="layout-box">
+      <Sider ref="side1" hide-trigger collapsible :collapsed-width="78" v-model="isCollapsed">
+        <Menu active-name="1-2" theme="dark" width="auto" :class="menuitemClasses">
+          <MenuItem name="1-1">
+            <Icon type="ios-navigate"></Icon>
+            <span>Option 1</span>
+          </MenuItem>
+          <MenuItem name="1-2">
+            <Icon type="ios-search"></Icon>
+            <span>Option 2</span>
+          </MenuItem>
+          <MenuItem name="1-3">
+            <Icon type="ios-settings"></Icon>
+            <span>Option 3</span>
+          </MenuItem>
         </Menu>
-      </i-col>
-      <i-col :span="spanRight">
-        <div class="layout-header">
-          <i-button type="text" @click="toggleClick">
-            <Icon type="navicon-round" size="32"></Icon>
-          </i-button>
-        </div>
-        <div class="layout-content">
-          <div class="layout-content-main">内容区域</div>
-        </div>
-        <div class="layout-copy">
-          2011-2016 &copy; TalkingData
-        </div>
-      </i-col>
-    </Row>
+      </Sider>
+      <Layout>
+        <Header :style="{padding: 0}" class="layout-header-bar">
+          <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '0 20px'}" type="md-menu" size="24"></Icon>
+        </Header>
+        <Content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
+          Content
+        </Content>
+      </Layout>
+    </Layout>
   </div>
 </template>
 
 <script>
-export default {
-  data () {
-    return {
-      spanLeft: 5,
-      spanRight: 19
-    }
-  },
-  computed: {
-    iconSize () {
-      return this.spanLeft === 5 ? 14 : 24;
-    }
-  },
-  methods: {
-    toggleClick () {
-      if (this.spanLeft === 5) {
-        this.spanLeft = 2;
-        this.spanRight = 22;
-      } else {
-        this.spanLeft = 5;
-        this.spanRight = 19;
+  export default {
+    data () {
+      return {
+        isCollapsed: false
+      }
+    },
+    computed: {
+      rotateIcon () {
+        return [
+          'menu-icon',
+          this.isCollapsed ? 'rotate-icon' : ''
+        ];
+      },
+      menuitemClasses () {
+        return [
+          'menu-item',
+          this.isCollapsed ? 'collapsed-menu' : ''
+        ]
+      }
+    },
+    methods: {
+      collapsedSider () {
+        this.$refs.side1.toggleCollapse();
       }
     }
   }
-}
 </script>
 
 <style lang="scss">
