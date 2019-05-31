@@ -8,6 +8,35 @@
   .layout-box{
     height: 100%;
   }
+  .Left-menu{
+    width: 274px;
+    height:100%;
+    overflow-y: scroll;
+  }
+  .Left-menu-tog{
+    width: 65px;
+    height:100%;
+    overflow-y: scroll;
+  }
+}
+.menu-collapsed{
+  width: 100%;
+  div{
+    width: 100%;
+  }
+}
+.ivu-layout-sider-children{
+  overflow-y: scroll;
+  overflow-x: hidden;
+  margin-right:-15px;
+}
+.drop-menu-a{
+  display: inline-block;
+  width: 100%;
+  font-size:20px;
+  color: #fff;
+  padding: 10px 15px;
+  text-align: center;
 }
 .dropdown-new{
   width: 100%;
@@ -20,7 +49,6 @@
 .layout-logo-left{
   width: 100%;
   height: 30px;
-  font-size: 20px;
   text-align: center;
   line-height: 30px;
   margin: 10px auto;
@@ -44,12 +72,28 @@
   vertical-align: middle;
   font-size: 16px;
 }
+.collapsed-menu li.ivu-menu-item,
+.collapsed-menu li.ivu-menu-submenu,
+.collapsed-menu li.ivu-menu-submenu .ivu-menu-submenu-title{
+  height: 50px;
+  text-indent: 4px;
+}
+.collapsed-menu>div.layout-logo-left{
+  width: 65px;
+  margin:10px 0;
+  transition: width .2s ease;
+}
+.collapsed-menu>div.ivu-dropdown{
+  width: 65px;
+  height:50px;
+  transition: width .2s ease;
+}
 .collapsed-menu span{
   width: 0px;
   transition: width .2s ease;
 }
 .collapsed-menu i{
-  transform: translateX(5px);
+  transform: translateX(8px);
   transition: font-size .2s ease .2s, transform .2s ease .2s;
   vertical-align: middle;
   font-size: 22px;

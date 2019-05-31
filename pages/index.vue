@@ -1,23 +1,21 @@
 <template>
   <div class="layout">
     <Layout class="layout-box">
-        <Sider width="253" breakpoint="md" ref="side1" hide-trigger collapsible :collapsed-width="78" v-model="isCollapsed"
-        style="overflow: hidden;">
-          <Menu active-name="1-2" theme="dark" width="auto" :class="menuitemClasses"
-                style="width: 274px;height:100%;overflow-y: scroll;">
-            <div class="layout-logo-left">
-              MyIview
-            </div>
-
+        <Sider width="253" breakpoint="md" ref="side1" hide-trigger collapsible :collapsed-width="65" v-model="isCollapsed"
+               style="overflow:hidden">
+          <div class="layout-logo-left" :style="{fontSize:logofont+'px'}">
+            MyIview
+          </div>
+          <Menu active-name="1-2" theme="dark" width="auto" :class="menuitemClasses" v-if="isMenuopen">
             <template v-for="(item,idx) in menu">
               <MenuItem :name="item.name" v-if="!item.child" :key="idx" >
                 <Icon :type="item.icon"></Icon>
                 <span>{{item.name}}</span>
               </MenuItem>
-              <Submenu :name="item.name" v-else="item.child" :key="idx">
+              <Submenu :name="item.name" v-else :key="idx">
                 <template slot="title">
                   <Icon :type="item.icon" />
-                  {{item.name}}
+                  <span>{{item.name}}</span>
                 </template>
                 <MenuItem v-for="(citem,cidx) in item.child" :name="citem.name" :key="cidx">
                   <Icon :type="citem.icon"></Icon>
@@ -25,14 +23,33 @@
                 </MenuItem>
               </Submenu>
             </template>
-
           </Menu>
+          <div v-else class="menu-collapsed">
+            <template v-for="(item,idx) in menu">
+              <Tooltip :content="item.name" placement="right" v-if="!item.child" transfer="true">
+                <a class="drop-menu-a">
+                  <Icon :type="item.icon" />
+                </a>
+              </Tooltip>
+              <Dropdown  placement="right-start"  :name="item.name" v-else :key="idx"  transfer="true">
+                <a  class="drop-menu-a">
+                  <Icon :type="item.icon" />
+                </a>
+                <DropdownMenu slot="list">
+                  <DropdownItem  v-for="(citem,cidx) in item.child" :name="citem.name" :key="cidx">
+                    <Icon :type="citem.icon" size="16"></Icon>
+                    <span>{{citem.name}}</span>
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </template>
+          </div>
         </Sider>
 
       <Layout>
         <Header :style="{padding: 0}"  class="layout-header-bar">
           <Row>
-            <Col span="1">
+            <Col span="2">
               <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '0 20px'}" type="md-menu" size="24"></Icon>
             </Col>
             <Col span="6">
@@ -59,7 +76,8 @@
     data () {
       return {
         isCollapsed: false,
-        isSmallmenu: true,
+        isMenuopen:true,
+        logofont:20,
         menu:[
           {
             name:'文档',
@@ -208,14 +226,15 @@
       menuitemClasses () {
         return [
           'menu-item',
-          this.isCollapsed ? 'collapsed-menu' : ''
+          this.isCollapsed ? 'collapsed-menu' : 'default-menu'
         ]
       }
     },
     methods: {
       collapsedSider () {
         this.$refs.side1.toggleCollapse();
-        this.isSmallmenu = false
+        this.isMenuopen = this.isMenuopen?false:true
+        this.logofont = this.isMenuopen?20:14
       }
     }
   }
