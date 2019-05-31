@@ -6,7 +6,7 @@
           <div class="layout-logo-left" :style="{fontSize:logofont+'px'}">
             MyIview
           </div>
-          <Menu active-name="1-2" theme="dark" width="auto" :class="menuitemClasses" v-if="isMenuopen">
+          <Menu :active-name="activeName" theme="dark" width="auto" :class="menuitemClasses" v-if="isMenuopen" accordion="true">
             <template v-for="(item,idx) in menu">
               <MenuItem :name="item.name" v-if="!item.child" :key="idx" >
                 <Icon :type="item.icon"></Icon>
@@ -27,7 +27,7 @@
           <div v-else class="menu-collapsed">
             <template v-for="(item,idx) in menu">
               <Tooltip :content="item.name" placement="right" v-if="!item.child" transfer="true">
-                <a class="drop-menu-a">
+                <a class="drop-menu-a" @click="selectMenu(item.name)">
                   <Icon :type="item.icon" />
                 </a>
               </Tooltip>
@@ -37,8 +37,10 @@
                 </a>
                 <DropdownMenu slot="list">
                   <DropdownItem  v-for="(citem,cidx) in item.child" :name="citem.name" :key="cidx">
-                    <Icon :type="citem.icon" size="16"></Icon>
-                    <span>{{citem.name}}</span>
+                    <a  @click="selectMenu(citem.name)" style="color:#515a6e">
+                      <Icon :type="citem.icon" size="16"></Icon>
+                      <span>{{citem.name}}</span>
+                    </a>
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
@@ -78,6 +80,7 @@
         isCollapsed: false,
         isMenuopen:true,
         logofont:20,
+        activeName:'文档',
         menu:[
           {
             name:'文档',
@@ -235,6 +238,10 @@
         this.$refs.side1.toggleCollapse();
         this.isMenuopen = this.isMenuopen?false:true
         this.logofont = this.isMenuopen?20:14
+      },
+      selectMenu(name){
+        console.log(name)
+        this.activeName = name;
       }
     }
   }
