@@ -115,7 +115,42 @@
             </Row>
 
           </Header>
-          <Content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
+          <div class="iview-label">
+            <div class="btn-con btn-left">
+              <Button>
+              <span>
+                <Icon type="ios-arrow-back" size="18"/>
+              </span>
+              </Button>
+            </div>
+            <div class="btn-con btn-right">
+              <Button>
+              <span>
+                <Icon type="ios-arrow-forward" size="18"/>
+              </span>
+              </Button>
+            </div>
+            <div class="close-con">
+              <Dropdown>
+                <Button type="text">
+                  <span>
+                    <Icon type="ios-close-circle-outline" size="18"/>
+                  </span>
+                </Button>
+                <DropdownMenu slot="list">
+                  <DropdownItem>关闭所有</DropdownItem>
+                  <DropdownItem>关闭其他</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+            <div class="scroll-outer">
+                <div class="scroll-body">
+                  <Tag type="dot" color="primary">主页</Tag>
+                  <Tag type="dot" closable color="primary">标签一</Tag>
+                </div>
+            </div>
+          </div>
+          <Content :style="{background: '#fafafa', minHeight: '260px'}">
             <nuxt/>
           </Content>
         </Layout>
