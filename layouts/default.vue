@@ -7,10 +7,10 @@
           <div class="layout-logo-left" :style="{fontSize:logofont+'px'}">
             MyIview
           </div>
-          <Menu :active-name="activeName" theme="dark" width="auto"
+          <Menu :active-name="ActiveMenu" theme="dark" width="auto"
                 :class="menuitemClasses" v-if="isMenuopen" accordion="true">
-            <template v-for="(item,idx) in menu">
-              <MenuItem :name="item.name" v-if="!item.child" :key="idx" :to="item.url">
+            <template v-for="(item,idx) in menu" v-if="item.url!='/'">
+              <MenuItem :name="item.name" v-if="!item.child" :key="idx" :to="item.url" @click="selectMenu(item.name)">
                 <Icon :type="item.icon"></Icon>
                 <span>{{item.name}}</span>
               </MenuItem>
@@ -19,7 +19,7 @@
                   <Icon :type="item.icon" />
                   <span>{{item.name}}</span>
                 </template>
-                <MenuItem v-for="(citem,cidx) in item.child" :name="citem.name" :key="cidx" :to="citem.url">
+                <MenuItem v-for="(citem,cidx) in item.child" :name="citem.name" :key="cidx" :to="citem.url" @click="selectMenu(item.name)">
                   <Icon :type="citem.icon"></Icon>
                   <span>{{citem.name}}</span>
                 </MenuItem>
@@ -27,7 +27,7 @@
             </template>
           </Menu>
           <div v-else class="menu-collapsed">
-            <template v-for="(item,idx) in menu">
+            <template v-for="(item,idx) in menu" v-if="item.url!='/'">
               <Tooltip :content="item.name" placement="right" v-if="!item.child" transfer="true">
                   <nuxt-link class="drop-menu-a" :to="item.url">
                     <a @click="selectMenu(item.name)" style="color:#fff">
@@ -55,12 +55,8 @@
         </Sider>
 
         <Layout>
-          <Header :style="{padding: 0}"  class="layout-header-bar">
-            <Row>
-              <Col span="1">
-                <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '0 20px '}" type="md-menu" size="24"></Icon>
-              </Col>
-              <Col span="6">
+          <Header style="padding: 0 40px 0 0"  class="layout-header-bar">
+                <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin:'20px'}" type="md-menu" size="24"></Icon>
                 <Breadcrumb>
                   <BreadcrumbItem to="/">
                     <Icon type="md-home" />
@@ -69,12 +65,11 @@
                   <BreadcrumbItem to="/components/breadcrumb">Components</BreadcrumbItem>
                   <BreadcrumbItem>Breadcrumb</BreadcrumbItem>
                 </Breadcrumb>
-              </Col>
-              <Col span="3" offset="14">
+
                   <div class="user-content">
-                    <Tooltip content="全屏" placement="bottom">
-                        <a @click="selectMenu()">
-                          <Icon type="md-expand" size="24"/>
+                    <Tooltip :content="isFullscreen.title" placement="bottom">
+                        <a @click="toggleFullScreen($event)">
+                          <Icon :type="isFullscreen.icon" size="24"/>
                         </a>
                     </Tooltip>
                     <Dropdown>
@@ -111,9 +106,6 @@
                       </DropdownMenu>
                     </Dropdown>
                   </div>
-              </Col>
-            </Row>
-
           </Header>
           <div class="iview-label">
             <div class="btn-con btn-left">
@@ -150,7 +142,7 @@
                 </div>
             </div>
           </div>
-          <Content :style="{background: '#fafafa', minHeight: '260px'}">
+          <Content class="main-content">
             <nuxt/>
           </Content>
         </Layout>
@@ -166,82 +158,108 @@
         isCollapsed: false,
         isMenuopen:true,
         logofont:20,
-        activeName:'文档',
+        isFullscreen:{
+          isFullScreenflag:true,
+          title:'全屏',
+          icon:'md-expand'
+        },
+        ActiveMenu:'主页',
         menu:[
+          {
+            name:'主页',
+            icon:'md-home',
+            url:'/',
+            isActive:true,
+          },
           {
             name:'文档',
             icon:'ios-book',
-            url:'/file'
+            url:'/file',
+            isActive:false,
           },
           {
             name:'地图',
             icon:'ios-map',
-            url:'/map'
+            url:'/map',
+            isActive:false,
           },
           {
             name:'组件',
             icon:'logo-buffer',
             url:'/file',
+            isActive:false,
             child:[
               {
                 name:'组件',
                 icon:'md-arrow-dropdown-circle',
-                url:'/file'
+                url:'/file',
+                isActive:false
               },
               {
                 name:'数字渐变',
                 icon:'md-trending-up',
-                url:'/number'
+                url:'/number',
+                isActive:false
               },
               {
                 name:'拖拽列表',
                 icon:'ios-infinite',
-                url:'/file'
+                url:'/file',
+                isActive:false
               },
               {
                 name:'可拖动抽屉',
                 icon:'md-list',
-                url:'/file'
+                url:'/file',
+                isActive:false
               },
               {
                 name:'组织结构树',
                 icon:'ios-people',
-                url:'/file'
+                url:'/file',
+                isActive:false
               },
               {
                 name:'树状表格',
                 icon:'md-git-branch',
-                url:'/file'
+                url:'/file',
+                isActive:false
               },
               {
                 name:'图片裁剪',
                 icon:'md-crop',
-                url:'/file'
+                url:'/file',
+                isActive:false
               },
               {
                 name:'多功能表格',
                 icon:'md-grid',
-                url:'/file'
+                url:'/file',
+                isActive:false
               },
               {
                 name:'分割窗口',
                 icon:'ios-pause',
-                url:'/file'
+                url:'/file',
+                isActive:false
               },
               {
                 name:'Markdown编辑器',
                 icon:'logo-markdown',
-                url:'/file'
+                url:'/file',
+                isActive:false
               },
               {
                 name:'富文本编辑器',
                 icon:'ios-create',
-                url:'/file'
+                url:'/file',
+                isActive:false
               },
               {
                 name:'自定义图标',
                 icon:'ios-bonfire',
-                url:'/file'
+                url:'/file',
+                isActive:false
               }
             ]
           },
@@ -249,16 +267,19 @@
             name:'上传数据',
             icon:'md-cloud-upload',
             url:'/file',
+            isActive:false,
             child:[
               {
                 name:'上传CSV文件',
                 icon:'md-document',
-                url:'/file'
+                url:'/file',
+                isActive:false
               },
               {
                 name:'粘贴表格数据',
                 icon:'md-clipboard',
-                url:'/file'
+                url:'/file',
+                isActive:false
               }
             ]
           },
@@ -266,70 +287,83 @@
             name:'Excel',
             icon:'ios-stats',
             url:'/file',
+            isActive:false,
             child:[
               {
                 name:'上传excel',
                 icon:'md-add',
-                url:'/file'
+                url:'/file',
+                isActive:false
               },
               {
                 name:'导出excel',
                 icon:'md-download',
-                url:'/file'
+                url:'/file',
+                isActive:false
               }
             ]
           },
           {
             name:'工具函数',
             icon:'ios-hammer',
-            url:'/file'
+            url:'/file',
+            isActive:false
           },
           {
             name:'i18n - 多语言',
             icon:'md-planet',
-            url:'/file'
+            url:'/file',
+            isActive:false
           },
           {
             name:'错误收集',
             icon:'ios-bug',
-            url:'/file'
+            url:'/file',
+            isActive:false
           },
           {
             name:'指令',
             icon:'ios-navigate',
-            url:'/file'
+            url:'/file',
+            isActive:false
           },
           {
             name:'多级菜单',
             icon:'md-menu',
             url:'/file',
+            isActive:false,
             child:[
               {
                 name:'Level-2-1',
                 icon:'md-funnel',
-                url:'/file'
+                url:'/file',
+                isActive:false
               },
               {
                 name:'Level-2-2',
                 icon:'md-funnel',
                 url:'/file',
+                isActive:false,
                 child:[
                   {
                     name:'Level-2-2-1',
                     icon:'md-funnel',
-                    url:'/file'
+                    url:'/file',
+                    isActive:false
                   },
                   {
                     name:'Level-2-2-2',
                     icon:'md-funnel',
-                    url:'/file'
+                    url:'/file',
+                    isActive:false
                   }
                 ]
               },
               {
                 name:'Level-2-3',
                 icon:'md-funnel',
-                url:'/file'
+                url:'/file',
+                isActive:false
               }
             ]
           }
@@ -351,13 +385,63 @@
       }
     },
     methods: {
-      collapsedSider () {
+      collapsedSider () {//收起和打开左侧菜单
         this.$refs.side1.toggleCollapse();
         this.isMenuopen = this.isMenuopen?false:true
         this.logofont = this.isMenuopen?20:14
       },
-      selectMenu(name){
-        this.activeName = name
+      getMenuobj(name){
+        let self = this
+        for(let i = 0;i<self.menu.length;i++){
+          if(self.menu[i].child && self.menu[i].child.length>0){
+            let children =  self.menu[i].child
+            for(let j = 0;j<children.length;j++){
+                children[j].isActive = children[j].name===name?true:false
+            }
+          }else{
+              self.menu[i].isActive = self.menu[i].name === name ? true : false
+          }
+        }
+      },
+      selectMenu(name){//菜单选择状态
+        let self = this
+        self.ActiveMenu = name
+        console.log(self.ActiveMenu)
+        self.getMenuobj(name)
+      },
+      FullScreen(el){//全屏代码
+        if(this.isFullscreen.isFullScreenflag){//退出全屏
+          if(document.exitFullscreen){
+            document.exitFullscreen()
+          }else if( document.mozCancelFullScreen){
+            document.mozCancelFullScreen()
+          }else if(document.webkitExitFullscreen){
+            //改变平面图在google浏览器上面的样式问题
+            document.webkitExitFullscreen()
+          }else if(!document.msRequestFullscreen){
+            document.msExitFullscreen()
+          }
+          this.isFullscreen.title = '全屏'
+          this.isFullscreen.icon = 'md-expand'
+        }else{    //进入全屏
+          if(el.requestFullscreen){
+            el.requestFullscreen()
+          }else if(el.mozRequestFullScreen){
+            el.mozRequestFullScreen()
+          }else if(el.webkitRequestFullscreen){
+            //改变平面图在google浏览器上面的样式问题
+            el.webkitRequestFullscreen();
+          }else if(el.msRequestFullscreen){
+            el.msRequestFullscreen()
+          }
+          this.isFullscreen.title = '退出全屏'
+          this.isFullscreen.icon = 'md-contract'
+        }
+      },
+      toggleFullScreen(e){
+        this.isFullscreen.isFullScreenflag=!this.isFullscreen.isFullScreenflag;
+        var el=e.srcElement||e.target;//target兼容Firefox
+        this.FullScreen(el);
       }
     }
   }
