@@ -9,8 +9,11 @@
           </div>
           <Menu :active-name="ActiveMenu" theme="dark" width="auto"
                 :class="menuitemClasses" v-if="isMenuopen" accordion="true">
-            <template v-for="(item,idx) in menu" v-if="item.url!='/'">
-              <MenuItem :name="item.name" v-if="!item.child" :key="idx" :to="item.url" @click="selectMenu(item.name)">
+            <template v-for="(item,idx) in menu">
+              <MenuItem :name="item.name" v-if="!item.child"
+                        :key="idx"
+                        :to="item.url"
+                        @click="menuhover(item.name,item.url)">
                 <Icon :type="item.icon"></Icon>
                 <span>{{item.name}}</span>
               </MenuItem>
@@ -19,7 +22,11 @@
                   <Icon :type="item.icon" />
                   <span>{{item.name}}</span>
                 </template>
-                <MenuItem v-for="(citem,cidx) in item.child" :name="citem.name" :key="cidx" :to="citem.url" @click="selectMenu(item.name)">
+                <MenuItem v-for="(citem,cidx) in item.child"
+                          :name="citem.name"
+                          :key="cidx"
+                          :to="citem.url"
+                          @click="menuhover(citem.name,citem.url)">
                   <Icon :type="citem.icon"></Icon>
                   <span>{{citem.name}}</span>
                 </MenuItem>
@@ -27,10 +34,10 @@
             </template>
           </Menu>
           <div v-else class="menu-collapsed">
-            <template v-for="(item,idx) in menu" v-if="item.url!='/'">
+            <template v-for="(item,idx) in menu">
               <Tooltip :content="item.name" placement="right" v-if="!item.child" transfer="true">
                   <nuxt-link class="drop-menu-a" :to="item.url">
-                    <a @click="selectMenu(item.name)" style="color:#fff">
+                    <a @click="menuhover(item.name,item.url)" style="color:#fff">
                       <Icon :type="item.icon" />
                     </a>
                   </nuxt-link>
@@ -42,7 +49,7 @@
                 <DropdownMenu slot="list">
                   <DropdownItem  v-for="(citem,cidx) in item.child" :name="citem.name" :key="cidx">
                     <nuxt-link :to="citem.url">
-                      <a @click="selectMenu(citem.name)" style="color:#515a6e">
+                      <a @click="menuhover(citem.name,citem.url)" style="color:#515a6e">
                         <Icon :type="citem.icon" size="16"></Icon>
                         <span>{{citem.name}}</span>
                       </a>
@@ -137,8 +144,20 @@
             </div>
             <div class="scroll-outer">
                 <div class="scroll-body">
-                  <Tag type="dot" color="primary">主页</Tag>
-                  <Tag type="dot" closable color="primary">标签一</Tag>
+                  <Tag type="dot" v-for="(iteml,indexl) in Menulabel"
+                       :color="iteml.isActive?'primary':''"
+                       v-if="indexl==0"
+                       @click="selectMenu(iteml.name,iteml.url)">
+                    {{iteml.name}}
+                  </Tag>
+
+                  <Tag type="dot" closable v-for="(iteme,indexe) in Menulabel"
+                       :color="iteme.isActive?'primary':''"
+                       v-if="indexe!=0"
+                       @click="selectMenu(iteme.name,iteme.url)"
+                       @on-close="handleClose(iteme.name)">
+                    {{iteme.name}}
+                  </Tag>
                 </div>
             </div>
           </div>
@@ -164,13 +183,14 @@
           icon:'md-expand'
         },
         ActiveMenu:'主页',
-        menu:[
+        Menulabel:[
           {
             name:'主页',
-            icon:'md-home',
             url:'/',
             isActive:true,
-          },
+          }
+        ],
+        menu:[
           {
             name:'文档',
             icon:'ios-book',
@@ -390,24 +410,46 @@
         this.isMenuopen = this.isMenuopen?false:true
         this.logofont = this.isMenuopen?20:14
       },
-      getMenuobj(name){
-        let self = this
-        for(let i = 0;i<self.menu.length;i++){
-          if(self.menu[i].child && self.menu[i].child.length>0){
-            let children =  self.menu[i].child
-            for(let j = 0;j<children.length;j++){
-                children[j].isActive = children[j].name===name?true:false
-            }
+      menuhover:function(mname,url){
+        var mobj = {name:mname,isActive:true,url:url};
+        var iscz = true;
+        for(let i=0;i<this.Menulabel.length;i++){
+          if(this.Menulabel[i].name!=mobj.name){
+            this.Menulabel[i].isActive=false;
           }else{
-              self.menu[i].isActive = self.menu[i].name === name ? true : false
+            iscz = false;
+            this.Menulabel[i].isActive = true;
           }
         }
+        if(iscz){
+          this.Menulabel.push(mobj);
+        }
       },
-      selectMenu(name){//菜单选择状态
-        let self = this
-        self.ActiveMenu = name
-        console.log(self.ActiveMenu)
-        self.getMenuobj(name)
+      selectMenu(name,url){//菜单选择状态
+        for(let i=0;i<this.Menulabel.length;i++){
+          this.Menulabel[i].isActive = this.Menulabel[i].name===name?true:false
+        }
+        this.ActiveMenu = name
+      },
+      handleClose(name){
+        let index = 0,mflag=false;
+        for(let i=0;i<this.Menulabel.length;i++){
+          if(this.Menulabel[i].name==name){
+            mflag = this.Menulabel[i].isActive;
+            this.Menulabel.splice(i,1);
+            index = i;
+          }
+        }
+        if(mflag){
+          if(this.Menulabel[index]){
+            this.Menulabel[index].isActive = true;
+            this.ActiveMenu = this.Menulabel[index].name;
+          }else{
+            this.Menulabel[index-1].isActive = true;
+            this.ActiveMenu = this.Menulabel[index-1].name;
+          }
+        }
+
       },
       FullScreen(el){//全屏代码
         if(this.isFullscreen.isFullScreenflag){//退出全屏
