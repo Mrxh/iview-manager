@@ -8,12 +8,12 @@
             MyIview
           </div>
           <Menu :active-name="ActiveMenu" theme="dark" width="auto"
-                :class="menuitemClasses" v-if="isMenuopen" accordion="true">
+                :class="menuitemClasses" v-if="isMenuopen" :accordion="true"
+                @on-select="menuhoverc" :open-names="ActiveSubmenu">
             <template v-for="(item,idx) in menu">
               <MenuItem :name="item.name" v-if="!item.child"
                         :key="idx"
-                        :to="item.url"
-                        @click="menuhover(item.name,item.url)">
+                        :to="item.url">
                 <Icon :type="item.icon"></Icon>
                 <span>{{item.name}}</span>
               </MenuItem>
@@ -25,8 +25,7 @@
                 <MenuItem v-for="(citem,cidx) in item.child"
                           :name="citem.name"
                           :key="cidx"
-                          :to="citem.url"
-                          @click="menuhover(citem.name,citem.url)">
+                          :to="citem.url">
                   <Icon :type="citem.icon"></Icon>
                   <span>{{citem.name}}</span>
                 </MenuItem>
@@ -35,14 +34,14 @@
           </Menu>
           <div v-else class="menu-collapsed">
             <template v-for="(item,idx) in menu">
-              <Tooltip :content="item.name" placement="right" v-if="!item.child" transfer="true">
+              <Tooltip :content="item.name" placement="right" v-if="!item.child" :transfer="true">
                   <nuxt-link class="drop-menu-a" :to="item.url">
                     <a @click="menuhover(item.name,item.url)" style="color:#fff">
                       <Icon :type="item.icon" />
                     </a>
                   </nuxt-link>
               </Tooltip>
-              <Dropdown  placement="right-start"  :name="item.name" v-else :key="idx"  transfer="true">
+              <Dropdown  placement="right-start"  :name="item.name" v-else :key="idx"  :transfer="true">
                 <a  class="drop-menu-a">
                   <Icon :type="item.icon" />
                 </a>
@@ -144,20 +143,21 @@
             </div>
             <div class="scroll-outer">
                 <div class="scroll-body">
-                  <Tag type="dot" v-for="(iteml,indexl) in Menulabel"
-                       :color="iteml.isActive?'primary':''"
-                       v-if="indexl==0"
-                       @click="selectMenu(iteml.name,iteml.url)">
+                     <Tag type="dot" v-for="(iteml,indexl) in Menulabel"
+                          :color="iteml.isActive?'primary':''"
+                          v-if="indexl==0"
+                          checkable
+                          @on-change="changeSel(iteml.name,iteml.url)">
                     {{iteml.name}}
-                  </Tag>
-
-                  <Tag type="dot" closable v-for="(iteme,indexe) in Menulabel"
-                       :color="iteme.isActive?'primary':''"
-                       v-if="indexe!=0"
-                       @click="selectMenu(iteme.name,iteme.url)"
-                       @on-close="handleClose(iteme.name)">
-                    {{iteme.name}}
-                  </Tag>
+                    </Tag>
+                    <Tag type="dot" closable v-for="(iteme,indexe) in Menulabel"
+                         :color="iteme.isActive?'primary':''"
+                         v-if="indexe!=0"
+                         checkable
+                         @on-change="changeSel(iteme.name,iteme.url)"
+                         @on-close="handleClose(iteme.name)">
+                      {{iteme.name}}
+                    </Tag>
                 </div>
             </div>
           </div>
@@ -183,6 +183,7 @@
           icon:'md-expand'
         },
         ActiveMenu:'主页',
+        ActiveSubmenu:[''],
         Menulabel:[
           {
             name:'主页',
@@ -410,26 +411,53 @@
         this.isMenuopen = this.isMenuopen?false:true
         this.logofont = this.isMenuopen?20:14
       },
-      menuhover:function(mname,url){
-        var mobj = {name:mname,isActive:true,url:url};
-        var iscz = true;
+      changeSel(name,url){
+        let mobj = {name:name,isActive:true,url:url}
+        let iscz = true;
         for(let i=0;i<this.Menulabel.length;i++){
           if(this.Menulabel[i].name!=mobj.name){
-            this.Menulabel[i].isActive=false;
+            this.Menulabel[i].isActive=false
           }else{
-            iscz = false;
-            this.Menulabel[i].isActive = true;
+            iscz = false
+            this.Menulabel[i].isActive = true
           }
         }
         if(iscz){
-          this.Menulabel.push(mobj);
+          this.Menulabel.push(mobj)
         }
+        this.getcorrectMenu(name)
       },
-      selectMenu(name,url){//菜单选择状态
-        for(let i=0;i<this.Menulabel.length;i++){
-          this.Menulabel[i].isActive = this.Menulabel[i].name===name?true:false
-        }
+      menuhover(mname,url){
+        this.changeSel(mname,url)
+      },
+      getcorrectMenu(name){
+        let cobj
         this.ActiveMenu = name
+        for(let i=0;i<this.menu.length;i++){
+          if(this.menu[i].child && this.menu[i].child.length>0){
+            for(let j=0;j<this.menu[i].child.length;j++){
+               if(this.menu[i].child[j].name===name){
+                 this.ActiveSubmenu[0] = this.menu[i].name
+                 cobj = this.menu[i].child[j]
+                 this.menu[i].child[j].isActive = true
+               }else{
+                 this.menu[i].child[j].isActive = false
+               }
+            }
+          }else{
+            if(this.menu[i].name===name){
+              cobj = this.menu[i]
+              this.menu[i].isActive = true
+            }else{
+              this.menu[i].isActive = false
+            }
+          }
+        }
+        return cobj
+      },
+      menuhoverc(name){
+        let url = this.getcorrectMenu(name).url
+        this.changeSel(name,url)
       },
       handleClose(name){
         let index = 0,mflag=false;
