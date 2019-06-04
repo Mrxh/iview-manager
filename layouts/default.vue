@@ -113,7 +113,7 @@
                     </Dropdown>
                   </div>
           </Header>
-          <div class="iview-label">
+          <div class="iview-label" id="iviewlabel">
             <div class="btn-con btn-left">
               <Button>
               <span>
@@ -141,8 +141,8 @@
                 </DropdownMenu>
               </Dropdown>
             </div>
-            <div class="scroll-outer">
-                <div class="scroll-body">
+            <div class="scroll-outer" id="scrollouter" @mousewheel="mousewheel($event)">
+                <div class="scroll-body" id="scrollbody" :style="{ left: leftSize + 'px' }">
                      <Tag type="dot" v-for="(iteml,indexl) in Menulabel"
                           :color="iteml.isActive?'primary':''"
                           v-if="indexl==0"
@@ -184,6 +184,7 @@
         },
         ActiveMenu:'主页',
         ActiveSubmenu:[''],
+        leftSize:0,
         Menulabel:[
           {
             name:'主页',
@@ -478,6 +479,25 @@
           }
         }
 
+      },
+      mousewheel:function(e){
+        var labelWidth =document.getElementById("iviewlabel").offsetWidth-88;
+        var tagslayWidth=document.getElementById("scrollbody").offsetWidth;
+        if (e.wheelDelta) {  //判断浏览器IE，谷歌滑轮事件
+          if (e.wheelDelta > 0 && this.leftSize!=0) { //当滑轮向上滚动时
+            this.leftSize+=30;
+          }
+          if (e.wheelDelta < 0 && tagslayWidth-labelWidth>0 && this.leftSize>=labelWidth-tagslayWidth) { //当滑轮向下滚动时
+            this.leftSize-=30;
+          }
+        } else if (e.detail && this.leftSize!=0) {  //Firefox滑轮事件
+          if (e.detail > 0) { //当滑轮向上滚动时
+            this.leftSize+=30;
+          }
+          if (e.detail < 0 && tagslayWidth-labelWidth>0 && this.leftSize>=labelWidth-tagslayWidth) { //当滑轮向下滚动时
+            this.leftSize-=30;
+          }
+        }
       },
       FullScreen(el){//全屏代码
         if(this.isFullscreen.isFullScreenflag){//退出全屏
