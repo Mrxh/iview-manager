@@ -64,7 +64,7 @@
           <Header style="padding: 0 40px 0 0"  class="layout-header-bar">
                 <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin:'20px'}" type="md-menu" size="24"></Icon>
                 <Breadcrumb>
-                  <BreadcrumbItem to="/">
+                  <BreadcrumbItem to="/" @click="menuhover('主页',1)">
                     <Icon type="md-home" />
                     主页
                   </BreadcrumbItem>
@@ -115,29 +115,29 @@
           </Header>
           <div class="iview-label" id="iviewlabel">
             <div class="btn-con btn-left">
-              <Button>
+              <Button @click="translateClick('l')">
               <span>
                 <Icon type="ios-arrow-back" size="18"/>
               </span>
               </Button>
             </div>
             <div class="btn-con btn-right">
-              <Button>
+              <Button @click="translateClick('r')">
               <span>
                 <Icon type="ios-arrow-forward" size="18"/>
               </span>
               </Button>
             </div>
             <div class="close-con">
-              <Dropdown>
+              <Dropdown  @on-click="closeTab">
                 <Button type="text">
                   <span>
                     <Icon type="ios-close-circle-outline" size="18"/>
                   </span>
                 </Button>
                 <DropdownMenu slot="list">
-                  <DropdownItem>关闭所有</DropdownItem>
-                  <DropdownItem>关闭其他</DropdownItem>
+                  <DropdownItem name="all">关闭所有</DropdownItem>
+                  <DropdownItem name="other">关闭其他</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </div>
@@ -412,21 +412,57 @@
         this.isMenuopen = this.isMenuopen?false:true
         this.logofont = this.isMenuopen?20:14
       },
+      tabPos(targetIndex){
+          let sbchildDom = document.getElementById('scrollbody').children
+          let labelWidth =document.getElementById("iviewlabel").offsetWidth-88
+          let targetWidth = 0,targetWidthl=0;
+          let gtabWidth = sbchildDom[targetIndex-1].offsetWidth+8
+           for(let i=0;i<sbchildDom.length;i++){
+             if(i<targetIndex){
+               targetWidth+=(sbchildDom[i].offsetWidth+4)
+             }
+             if(i<targetIndex-1){
+               targetWidthl+=(sbchildDom[i].offsetWidth+4)
+             }
+           }
+           targetWidth+=8
+           if(targetWidth>labelWidth){//超出右端
+             let showWidth = targetWidth+this.leftSize
+             if(showWidth>labelWidth){
+               this.leftSize = -(targetWidth-labelWidth)
+             }
+           }
+           if(targetWidthl<=-this.leftSize){//超出左端
+             this.leftSize = gtabWidth-targetWidth
+           }
+      },
       changeSel(name,url){
         let mobj = {name:name,isActive:true,url:url}
         let iscz = true;
+        let targetIndex = 0
+        let self = this
         for(let i=0;i<this.Menulabel.length;i++){
           if(this.Menulabel[i].name!=mobj.name){
             this.Menulabel[i].isActive=false
           }else{
             iscz = false
             this.Menulabel[i].isActive = true
+            targetIndex = i+1
           }
         }
         if(iscz){
           this.Menulabel.push(mobj)
+          targetIndex = this.Menulabel.length
         }
         this.getcorrectMenu(name)
+
+        var timer1 = null;
+        clearTimeout(timer1);
+        timer1 = setTimeout(function(){
+          self.tabPos(targetIndex,name)
+          clearTimeout(timer1);
+          timer1 = null;
+        },0);
       },
       menuhover(mname,url){
         this.changeSel(mname,url)
@@ -478,26 +514,79 @@
             this.ActiveMenu = this.Menulabel[index-1].name;
           }
         }
-
       },
-      mousewheel:function(e){
-        var labelWidth =document.getElementById("iviewlabel").offsetWidth-88;
-        var tagslayWidth=document.getElementById("scrollbody").offsetWidth;
+      mousewheel(e){
+        let labelWidth =document.getElementById("iviewlabel").offsetWidth-88
+        let tagslayWidth=document.getElementById("scrollbody").offsetWidth
+        let lastWidth = tagslayWidth+this.leftSize-labelWidth
         if (e.wheelDelta) {  //判断浏览器IE，谷歌滑轮事件
-          if (e.wheelDelta > 0 && this.leftSize!=0) { //当滑轮向上滚动时
-            this.leftSize+=30;
+          if (e.wheelDelta > 0 && this.leftSize<0) { //当滑轮向上滚动时
+            if(this.leftSize>=30) {
+              this.leftSize += 30
+            }else{
+              this.leftSize = 0
+            }
           }
           if (e.wheelDelta < 0 && tagslayWidth-labelWidth>0 && this.leftSize>=labelWidth-tagslayWidth) { //当滑轮向下滚动时
-            this.leftSize-=30;
+            if(lastWidth>=30){
+              this.leftSize-=30
+            }else{
+              this.leftSize-=lastWidth
+            }
           }
-        } else if (e.detail && this.leftSize!=0) {  //Firefox滑轮事件
+        } else if (e.detail && this.leftSize<0) {  //Firefox滑轮事件
           if (e.detail > 0) { //当滑轮向上滚动时
-            this.leftSize+=30;
+            if(this.leftSize>=30) {
+              this.leftSize += 30
+            }else{
+              this.leftSize = 0
+            }
           }
           if (e.detail < 0 && tagslayWidth-labelWidth>0 && this.leftSize>=labelWidth-tagslayWidth) { //当滑轮向下滚动时
-            this.leftSize-=30;
+            if(lastWidth>=30){
+              this.leftSize-=30
+            }else{
+              this.leftSize-=lastWidth
+            }
           }
         }
+      },
+      translateClick(direction){
+        let labelWidth =document.getElementById("iviewlabel").offsetWidth-88
+        let tagslayWidth=document.getElementById("scrollbody").offsetWidth
+        let lastWidth = tagslayWidth+this.leftSize-labelWidth
+          if (direction === 'l' && this.leftSize<0) { //当滑轮向上滚动时
+            if(this.leftSize>=100) {
+              this.leftSize += 100
+            }else{
+              this.leftSize = 0
+            }
+          }
+          if (direction === 'r' && tagslayWidth-labelWidth>0 && this.leftSize>=labelWidth-tagslayWidth) { //当滑轮向下滚动时
+            if(lastWidth>=100){
+              this.leftSize-=100
+            }else{
+              this.leftSize-=lastWidth
+            }
+          }
+      },
+      closeTab(name){
+        let mobj = {name:'主页',isActive:true,url:'/'}
+        let Menulabeln=[]
+        if(name==='all'){
+          Menulabeln.push(mobj)
+          this.getcorrectMenu('主页')
+        }else{
+          mobj.isActive = false
+          Menulabeln.push(mobj)
+          for(let i=0;i<this.Menulabel.length;i++){
+            if(this.Menulabel[i].name==this.ActiveMenu){
+              Menulabeln.push(this.Menulabel[i])
+            }
+          }
+        }
+        this.Menulabel = Menulabeln
+        this.leftSize = 0
       },
       FullScreen(el){//全屏代码
         if(this.isFullscreen.isFullScreenflag){//退出全屏
