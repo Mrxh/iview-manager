@@ -34,7 +34,7 @@
           </Menu>
           <div v-else class="menu-collapsed">
             <template v-for="(item,idx) in menu">
-              <Tooltip :content="item.name" placement="right" v-if="!item.child" :transfer="true">
+              <Tooltip :content="item.name" placement="right" v-if="!item.child" :transfer="true" :key="idx">
                   <nuxt-link class="drop-menu-a" :to="item.url">
                     <a @click="menuhover(item.name,item.url)" style="color:#fff">
                       <Icon :type="item.icon" />
@@ -64,12 +64,18 @@
           <Header style="padding: 0 40px 0 0"  class="layout-header-bar">
                 <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin:'20px'}" type="md-menu" size="24"></Icon>
                 <Breadcrumb>
-                  <BreadcrumbItem to="/" @click="menuhover('主页',1)">
-                    <Icon type="md-home" />
-                    主页
-                  </BreadcrumbItem>
-                  <BreadcrumbItem to="/components/breadcrumb">Components</BreadcrumbItem>
-                  <BreadcrumbItem>Breadcrumb</BreadcrumbItem>
+                  <template v-for="(item,idx) in Breadcrumb">
+                    <BreadcrumbItem v-if="item.url" :to="item.url" :key="idx">
+                      <span @click="changeSel(item.name,item.url)">
+                        <Icon :type="item.icon" />
+                        {{item.name}}
+                      </span>
+                    </BreadcrumbItem>
+                    <BreadcrumbItem v-else :key="idx">
+                      <Icon :type="item.icon" />
+                      {{item.name}}
+                    </BreadcrumbItem>
+                  </template>
                 </Breadcrumb>
 
                   <div class="user-content">
@@ -146,6 +152,7 @@
                      <Tag type="dot" v-for="(iteml,indexl) in Menulabel"
                           :color="iteml.isActive?'primary':''"
                           v-if="indexl==0"
+                          :key="indexl"
                           checkable
                           @on-change="changeSel(iteml.name,iteml.url)">
                     {{iteml.name}}
@@ -153,6 +160,7 @@
                     <Tag type="dot" closable v-for="(iteme,indexe) in Menulabel"
                          :color="iteme.isActive?'primary':''"
                          v-if="indexe!=0"
+                         :key="indexe+1"
                          checkable
                          @on-change="changeSel(iteme.name,iteme.url)"
                          @on-close="handleClose(iteme.name)">
@@ -190,6 +198,13 @@
             name:'主页',
             url:'/',
             isActive:true,
+          }
+        ],
+        Breadcrumb:[
+          {
+            name:'主页',
+            url:'/',
+            icon:'md-home'
           }
         ],
         menu:[
@@ -428,13 +443,16 @@
            targetWidth+=8
            if(targetWidth>labelWidth){//超出右端
              let showWidth = targetWidth+this.leftSize
-             if(showWidth>labelWidth){
+             if(showWidth!=labelWidth){
                this.leftSize = -(targetWidth-labelWidth)
              }
            }
            if(targetWidthl<=-this.leftSize){//超出左端
              this.leftSize = gtabWidth-targetWidth
            }
+          if(targetWidth<labelWidth){//超出右端
+              this.leftSize = 0
+          }
       },
       changeSel(name,url){
         let mobj = {name:name,isActive:true,url:url}
@@ -459,13 +477,44 @@
         var timer1 = null;
         clearTimeout(timer1);
         timer1 = setTimeout(function(){
-          self.tabPos(targetIndex,name)
+          self.tabPos(targetIndex)
           clearTimeout(timer1);
           timer1 = null;
         },0);
+        //跳转路由
+        this.$router.push({
+          path: url,
+        });
+        //添加面包屑菜单
+        let breadArr = this.getcorrectMenup(name)
+        this.Breadcrumb.splice(1,2)
+        if(breadArr[0]){
+          this.Breadcrumb.push(breadArr[0])
+        }
+        if(breadArr[1]){
+          this.Breadcrumb.push(breadArr[1])
+        }
       },
       menuhover(mname,url){
         this.changeSel(mname,url)
+      },
+      getcorrectMenup(name){
+        let cobj = []
+        for(let i=0;i<this.menu.length;i++){
+          if(this.menu[i].child && this.menu[i].child.length>0){
+            for(let j=0;j<this.menu[i].child.length;j++){
+              if(this.menu[i].child[j].name===name){
+                cobj.push({name:this.menu[i].name,url:'',icon:this.menu[i].icon})
+                cobj.push({name:this.menu[i].child[j].name,url:'',icon:this.menu[i].child[j].icon})
+              }
+            }
+          }else{
+            if(this.menu[i].name===name){
+              cobj.push({name:this.menu[i].name,url:'',icon:this.menu[i].icon})
+            }
+          }
+        }
+        return cobj
       },
       getcorrectMenu(name){
         let cobj
@@ -497,7 +546,7 @@
         this.changeSel(name,url)
       },
       handleClose(name){
-        let index = 0,mflag=false;
+        let index = 0,mflag=false,self=this,indexn = 0;
         for(let i=0;i<this.Menulabel.length;i++){
           if(this.Menulabel[i].name==name){
             mflag = this.Menulabel[i].isActive;
@@ -509,11 +558,25 @@
           if(this.Menulabel[index]){
             this.Menulabel[index].isActive = true;
             this.ActiveMenu = this.Menulabel[index].name;
+            indexn = index
           }else{
             this.Menulabel[index-1].isActive = true;
             this.ActiveMenu = this.Menulabel[index-1].name;
+            indexn = index-1
           }
         }
+        for(let i=0;i<this.Menulabel.length;i++){
+          if(this.Menulabel[i].isActive){
+            indexn = i;
+          }
+        }
+        var timer2 = null;
+        clearTimeout(timer2);
+        timer2 = setTimeout(function(){
+          self.tabPos(indexn+1)
+          clearTimeout(timer2);
+          timer2 = null;
+        },0);
       },
       mousewheel(e){
         let labelWidth =document.getElementById("iviewlabel").offsetWidth-88
