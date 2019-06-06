@@ -10,7 +10,7 @@
           <Menu :active-name="ActiveMenu" theme="dark" width="auto"
                 :class="menuitemClasses" v-if="isMenuopen" :accordion="true"
                 @on-select="menuhoverc" :open-names="ActiveSubmenu">
-            <template v-for="(item,idx) in menu">
+            <template v-for="(item,idx) in menu" v-if="idx!=0">
               <MenuItem :name="item.name" v-if="!item.child"
                         :key="idx"
                         :to="item.url">
@@ -33,7 +33,7 @@
             </template>
           </Menu>
           <div v-else class="menu-collapsed">
-            <template v-for="(item,idx) in menu">
+            <template v-for="(item,idx) in menu" v-if="idx!=0">
               <Tooltip :content="item.name" placement="right" v-if="!item.child" :transfer="true" :key="idx">
                   <nuxt-link class="drop-menu-a" :to="item.url">
                     <a @click="menuhover(item.name,item.url)" style="color:#fff">
@@ -208,6 +208,12 @@
           }
         ],
         menu:[
+          {
+            name:'主页',
+            url:'/',
+            icon:'md-home',
+            isActive:true
+          },
           {
             name:'文档',
             icon:'ios-book',
@@ -421,6 +427,9 @@
         ]
       }
     },
+    mounted(){
+      console.log(this.$echarts)
+    },
     methods: {
       collapsedSider () {//收起和打开左侧菜单
         this.$refs.side1.toggleCollapse();
@@ -454,6 +463,28 @@
               this.leftSize = 0
           }
       },
+      changeRouoter(name,url,targetIndex){
+        let timer1 = null,self = this;
+        clearTimeout(timer1);
+        timer1 = setTimeout(function(){
+          self.tabPos(targetIndex)
+          clearTimeout(timer1);
+          timer1 = null;
+        },0);
+        //跳转路由
+        this.$router.push({
+          path: url,
+        });
+        //添加面包屑菜单
+        let breadArr = this.getcorrectMenup(name)
+        this.Breadcrumb.splice(1,2)
+        if(breadArr[0] && breadArr[0].name!='主页'){
+          this.Breadcrumb.push(breadArr[0])
+        }
+        if(breadArr[1]){
+          this.Breadcrumb.push(breadArr[1])
+        }
+      },
       changeSel(name,url){
         let mobj = {name:name,isActive:true,url:url}
         let iscz = true;
@@ -474,26 +505,7 @@
         }
         this.getcorrectMenu(name)
 
-        var timer1 = null;
-        clearTimeout(timer1);
-        timer1 = setTimeout(function(){
-          self.tabPos(targetIndex)
-          clearTimeout(timer1);
-          timer1 = null;
-        },0);
-        //跳转路由
-        this.$router.push({
-          path: url,
-        });
-        //添加面包屑菜单
-        let breadArr = this.getcorrectMenup(name)
-        this.Breadcrumb.splice(1,2)
-        if(breadArr[0]){
-          this.Breadcrumb.push(breadArr[0])
-        }
-        if(breadArr[1]){
-          this.Breadcrumb.push(breadArr[1])
-        }
+        this.changeRouoter(name,url,targetIndex)
       },
       menuhover(mname,url){
         this.changeSel(mname,url)
@@ -546,7 +558,7 @@
         this.changeSel(name,url)
       },
       handleClose(name){
-        let index = 0,mflag=false,self=this,indexn = 0;
+        let index = 0,mflag=false,self=this,indexn = 0,newname,url;
         for(let i=0;i<this.Menulabel.length;i++){
           if(this.Menulabel[i].name==name){
             mflag = this.Menulabel[i].isActive;
@@ -568,15 +580,11 @@
         for(let i=0;i<this.Menulabel.length;i++){
           if(this.Menulabel[i].isActive){
             indexn = i;
+            url = this.Menulabel[i].url
           }
         }
-        var timer2 = null;
-        clearTimeout(timer2);
-        timer2 = setTimeout(function(){
-          self.tabPos(indexn+1)
-          clearTimeout(timer2);
-          timer2 = null;
-        },0);
+        newname = this.ActiveMenu
+        this.changeRouoter(newname,url,indexn+1)
       },
       mousewheel(e){
         let labelWidth =document.getElementById("iviewlabel").offsetWidth-88
@@ -638,7 +646,7 @@
         let Menulabeln=[]
         if(name==='all'){
           Menulabeln.push(mobj)
-          this.getcorrectMenu('主页')
+          this.changeSel('主页','/')
         }else{
           mobj.isActive = false
           Menulabeln.push(mobj)
