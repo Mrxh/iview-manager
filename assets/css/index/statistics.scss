@@ -1,0 +1,32 @@
+.i-statistics{
+  background: #fff;
+  width: 90%;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  dl{
+    dt{
+      width: 36%;
+      height: 110px;
+      line-height: 110px;
+      text-align: center;
+      color: #fff;
+      float: left;
+    }
+    dd{
+      float: left;
+      width: 64%;
+      div{
+        width: 100%;
+        font-size: 3.125rem;
+        text-align: center;
+      }
+      p{
+        width: 100%;
+        font-size: 1rem;
+        text-align: center;
+      }
+    }
+  }
+}

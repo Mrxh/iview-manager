@@ -60,7 +60,7 @@
           </div>
         </Sider>
 
-        <Layout>
+        <Layout style="position: relative">
           <Header style="padding: 0 40px 0 0"  class="layout-header-bar">
                 <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin:'20px'}" type="md-menu" size="24"></Icon>
                 <Breadcrumb>
