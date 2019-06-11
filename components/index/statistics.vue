@@ -1,14 +1,16 @@
 <template>
    <div class="i-statistics">
-       <dl>
-         <dt :style="{background:statis.bjcolor}">
-           <Icon :type="statis.icon" size="36"/>
-         </dt>
-         <dd>
-           <div>{{statis.data}}</div>
-           <p>{{statis.name}}</p>
-         </dd>
-       </dl>
+       <div class="i-statistics-con">
+         <dl>
+           <dt :style="{background:statis.bjcolor}">
+             <Icon :type="statis.icon" size="36"/>
+           </dt>
+           <dd>
+             <div>{{numberData}}</div>
+             <p>{{statis.name}}</p>
+           </dd>
+         </dl>
+       </div>
    </div>
 </template>
 
@@ -22,6 +24,21 @@
               return {}
             }
           }
+        },
+        data(){
+          return {
+            numberData:0
+          }
+        },
+        mounted() {
+          let self = this,timers = null
+          timers = setInterval(()=>{
+            if(self.numberData<self.statis.data){
+              self.numberData+=1
+            }else{
+              clearInterval(timers)
+            }
+          },1)
         }
     }
 </script>
