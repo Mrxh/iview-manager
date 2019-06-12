@@ -10,7 +10,7 @@
       data(){
         return {
           id:'map',
-          key:'890f6a5552f9c0ebfe7f33bda5f8ed7b',
+          key:'ca2b91fcffb492f58fcc96293c11cf7f',
           point:[104.06,30.67]
         }
       },

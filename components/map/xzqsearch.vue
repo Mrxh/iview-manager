@@ -61,8 +61,8 @@
               //行政区查询
               district.setLevel(self.xzqselect)
               district.search(self.dqname, function(status, result) {
-                console.log(status,result)
                 map.remove(polygons)//清除上次结果
+                map.clearMap();
                 polygons = [];
                 var bounds = result.districtList[0].boundaries;
                 if (bounds) {
