@@ -22,12 +22,12 @@
             zoom: 10,
             center: self.point
           });
-          self.map = map
-          window.AMap.plugin('AMap.ToolBar',()=>{
-            map.addControl(new window.AMap.ToolBar());
+          self.$store.state.mapobj = map
+          AMap.plugin('AMap.ToolBar',()=>{
+            map.addControl(new AMap.ToolBar());
           })
         }
-        let url = `https://webapi.amap.com/maps?v=1.4.14&key=${self.key}&callback=onmapload`;
+        let url = `https://webapi.amap.com/maps?v=1.4.15&key=${self.key}&callback=onmapload&plugin=AMap.DistrictSearch`;
         let jsapi = document.createElement('script');
         jsapi.charset = 'utf-8';
         jsapi.src = url;

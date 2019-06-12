@@ -429,7 +429,9 @@
       }
     },
     mounted(){
-      console.log(this.$echarts)
+      this.$router.push({
+        path:'/'
+      })
     },
     methods: {
       collapsedSider () {//收起和打开左侧菜单
@@ -473,9 +475,11 @@
           timer1 = null;
         },0);
         //跳转路由
+        this.$Loading.start();
         this.$router.push({
           path: url,
         });
+        this.$Loading.finish();
         //添加面包屑菜单
         let breadArr = this.getcorrectMenup(name)
         this.Breadcrumb.splice(1,2)

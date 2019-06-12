@@ -63,7 +63,7 @@
           {
             name:'新增页面',
             data:15,
-            icon:'md-map',
+            icon:'md-modules',
             bjcolor:'#9A66E4'
           }
         ],
