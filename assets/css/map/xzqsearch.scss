@@ -2,6 +2,19 @@
   .title{
     padding: 6px;
     border-bottom: 1px solid #eee;
+    font-weight: 900;
+  }
+  .s-content{
+    padding: 6px;
+    font-size: 0.875rem;
+    span{
+      margin-right: 3px;
+      font-size: 0.75rem;
+    }
+    .s-weather{
+      display: inline-block;
+      width: 3rem;
+    }
   }
   dl{
     dt{

@@ -16,10 +16,12 @@
         </dd>
       </dl>
       <Button type="primary" long class="search-btn" @click="searchxzq">查询</Button>
+      <Tqsearch :tqdata="tqdata" :tqybdata="tqybdata"></Tqsearch>
     </div>
 </template>
 
 <script>
+    import Tqsearch from './tqsearch.vue'
     export default {
         name: "xzqsearch",
         data(){
@@ -39,8 +41,16 @@
               }
             ],
             xzqselect:'',
-            dqname:''
+            dqname:'成都',
+            tqdata:{},
+            tqybdata:{}
           }
+        },
+        components:{
+          Tqsearch
+        },
+        mounted() {
+          this.searchxzq()
         },
         methods:{
           searchxzq(){
@@ -81,6 +91,24 @@
                 map.add(polygons)
                 map.setFitView(polygons);//视口自适应
               });
+              self.searchtq(self.dqname)
+          },
+          searchtq(){
+            let self = this
+            AMap.plugin('AMap.Weather', function() {
+              var weather = new AMap.Weather();
+              //查询实时天气信息, 查询的城市到行政级别的城市，如朝阳区、杭州市
+              weather.getLive(self.dqname, function(err, data) {
+                if (!err) {
+                  self.tqdata = data
+                }
+              });
+              // //未来4天天气预报
+              weather.getForecast(self.dqname, function(err, data) {
+                if (err) {return;}
+                self.tqybdata = data.forecasts
+              });
+            });
           }
         }
     }

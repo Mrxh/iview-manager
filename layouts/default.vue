@@ -290,7 +290,7 @@
               {
                 name:'Markdown编辑器',
                 icon:'logo-markdown',
-                url:'/file',
+                url:'/markdown',
                 isActive:false
               },
               {
