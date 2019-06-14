@@ -28,14 +28,19 @@ module.exports = {
   ** Global CSS
   */
   css: [
-    'iview/dist/styles/iview.css'
+    'iview/dist/styles/iview.css',
+    'mavon-editor/dist/css/index.css'
   ],
 
   /*
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '@/plugins/iview'
+    '@/plugins/iview',
+    {
+      src: '@/plugins/mavon-editor',
+      ssr: false
+    }
   ],
 
   /*
