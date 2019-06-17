@@ -27,7 +27,7 @@
         },
         data(){
           return {
-            numberData:0
+            numberData:parseInt(this.statis.data*0.85)
           }
         },
         mounted() {

@@ -296,7 +296,7 @@
               {
                 name:'富文本编辑器',
                 icon:'ios-create',
-                url:'/file',
+                url:'/fwbediter',
                 isActive:false
               },
               {
