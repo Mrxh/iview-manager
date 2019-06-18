@@ -12,8 +12,7 @@
                 @on-select="menuhoverc" :open-names="ActiveSubmenu">
             <template v-for="(item,idx) in menu" v-if="idx!=0">
               <MenuItem :name="item.name" v-if="!item.child"
-                        :key="idx"
-                        :to="item.url">
+                        :key="idx">
                 <Icon :type="item.icon"></Icon>
                 <span>{{item.name}}</span>
               </MenuItem>
@@ -24,8 +23,7 @@
                 </template>
                 <MenuItem v-for="(citem,cidx) in item.child"
                           :name="citem.name"
-                          :key="cidx"
-                          :to="citem.url">
+                          :key="cidx">
                   <Icon :type="citem.icon"></Icon>
                   <span>{{citem.name}}</span>
                 </MenuItem>
@@ -35,11 +33,11 @@
           <div v-else class="menu-collapsed">
             <template v-for="(item,idx) in menu" v-if="idx!=0">
               <Tooltip :content="item.name" placement="right" v-if="!item.child" :transfer="true" :key="idx">
-                  <nuxt-link class="drop-menu-a" :to="item.url">
+                  <a class="drop-menu-a">
                     <a @click="menuhover(item.name,item.url)" style="color:#fff">
                       <Icon :type="item.icon" />
                     </a>
-                  </nuxt-link>
+                  </a>
               </Tooltip>
               <Dropdown  placement="right-start"  :name="item.name" v-else :key="idx"  :transfer="true">
                 <a  class="drop-menu-a">
@@ -47,12 +45,12 @@
                 </a>
                 <DropdownMenu slot="list">
                   <DropdownItem  v-for="(citem,cidx) in item.child" :name="citem.name" :key="cidx">
-                    <nuxt-link :to="citem.url">
+                    <a>
                       <a @click="menuhover(citem.name,citem.url)" style="color:#515a6e">
                         <Icon :type="citem.icon" size="16"></Icon>
                         <span>{{citem.name}}</span>
                       </a>
-                    </nuxt-link>
+                    </a>
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
@@ -218,7 +216,7 @@
           {
             name:'文档',
             icon:'ios-book',
-            url:'/file',
+            url:'https://www.iviewui.com',
             isActive:false,
           },
           {
@@ -234,15 +232,15 @@
             isActive:false,
             child:[
               {
-                name:'组件',
-                icon:'md-arrow-dropdown-circle',
-                url:'/file',
+                name:'表格和分页',
+                icon:'ios-grid',
+                url:'/tablepage',
                 isActive:false
               },
               {
-                name:'数字渐变',
-                icon:'md-trending-up',
-                url:'/number',
+                name:'通知提醒',
+                icon:'ios-notifications',
+                url:'/notifications',
                 isActive:false
               },
               {
@@ -560,7 +558,11 @@
       },
       menuhoverc(name){
         let url = this.getcorrectMenu(name).url
-        this.changeSel(name,url)
+        if(name==='文档'){
+          window.open(url,'_blank')
+        }else{
+          this.changeSel(name,url)
+        }
       },
       handleClose(name){
         let index = 0,mflag=false,self=this,indexn = 0,newname,url;
